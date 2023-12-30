@@ -6,4 +6,6 @@ public class ConstantsUtil {
     public static final String INTERNAL_SERVER_ERROR_LOGGING = "Something went wrong : {}";
     public static final String HTTP_CLIENT_EXCEPTION_ERROR_MESSAGE = "Http client exception : {}";
     public static final String PRODUCT_NOT_FOUND = "Product with id {%s} not found";
+    public static final String CART_NOT_FOUND = "Cart with id : %s not found";
+    public static final String NO_DATA_FOUND = "No data found for userid = %s";
 }

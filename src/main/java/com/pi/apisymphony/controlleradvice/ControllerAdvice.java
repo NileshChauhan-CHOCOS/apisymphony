@@ -3,7 +3,10 @@ package com.pi.apisymphony.controlleradvice;
 import com.pi.apisymphony.constans.ConstantsUtil;
 import com.pi.apisymphony.dto.ExceptionDto;
 import com.pi.apisymphony.exception.InvalidArgumentException;
+import com.pi.apisymphony.exception.NoDataFoundException;
 import com.pi.apisymphony.exception.NotFoundException;
+import com.pi.apisymphony.response.BaseHttpResponse;
+import com.pi.apisymphony.response.BaseHttpResponseBuilder;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -55,5 +58,11 @@ public class ControllerAdvice {
         String message = ExceptionUtils.getStackTrace(e);
         logger.error(ConstantsUtil.HTTP_CLIENT_EXCEPTION_ERROR_MESSAGE, message);
         return new ResponseEntity<>(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, ConstantsUtil.SOMETHING_WENT_WRONG), HttpStatus.OK);
+    }
+    @ExceptionHandler(NoDataFoundException.class)
+    public ResponseEntity<BaseHttpResponse> handleNoDataFoundException(@NonNull NoDataFoundException e){
+        String message = e.getMessage();
+        BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.NOT_FOUND.value(), message);
+        return new ResponseEntity<>(baseHttpResponse,HttpStatus.NOT_FOUND);
     }
 }

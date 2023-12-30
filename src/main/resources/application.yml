@@ -5,6 +5,7 @@ fakestore:
     uri: https://fakestoreapi.com
     paths:
       product: /products
+      cart: /carts
       pathVariable:
         id: /{id}
         category: /category/{category}

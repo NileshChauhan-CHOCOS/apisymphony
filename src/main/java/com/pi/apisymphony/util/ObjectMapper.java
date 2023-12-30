@@ -1,7 +1,11 @@
 package com.pi.apisymphony.util;
 
+import com.pi.apisymphony.dto.FakeStoreCartDto;
 import com.pi.apisymphony.dto.FakeStoreProductDto;
+import com.pi.apisymphony.dto.GenericCartDto;
 import com.pi.apisymphony.dto.GenericProductDto;
+
+import java.util.Arrays;
 
 public class ObjectMapper {
     public static GenericProductDto mapToGenericProductDto(FakeStoreProductDto fakeStoreProductDto){
@@ -28,5 +32,25 @@ public class ObjectMapper {
                     .image(genericProductDto.getImage()).build();
         }
         return FakeStoreProductDto.builder().build();
+    }
+    public static GenericCartDto mapToGenericCartDto(FakeStoreCartDto fakeStoreCartDto){
+        if(fakeStoreCartDto != null){
+            return GenericCartDto.builder()
+                    .id(fakeStoreCartDto.getId())
+                    .userId(fakeStoreCartDto.getUserId())
+                    .date(fakeStoreCartDto.getDate())
+                    .products(Arrays.stream(fakeStoreCartDto.getProducts()).map(ObjectMapper::mapToGenericCartItem).toArray(GenericCartDto.CartItem[]::new))
+                    .build();
+        }
+        return null;
+    }
+    public static GenericCartDto.CartItem mapToGenericCartItem(FakeStoreCartDto.CartItem fakeStoreCartItem){
+        if(fakeStoreCartItem != null){
+            return GenericCartDto.CartItem.builder()
+                    .productId(fakeStoreCartItem.getProductId())
+                    .quantity(fakeStoreCartItem.getQuantity())
+                    .build();
+        }
+        return null;
     }
 }

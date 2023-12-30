@@ -1,0 +1,19 @@
+server:
+  port: 8080
+fakestore:
+  api:
+    uri: https://fakestoreapi.com
+    paths:
+      product: /products
+      pathVariable:
+        id: /{id}
+        category: /category/{category}
+spring:
+  output:
+    ansi:
+      enabled: ALWAYS
+logging:
+  level:
+    org:
+      springframework:
+        web: debug

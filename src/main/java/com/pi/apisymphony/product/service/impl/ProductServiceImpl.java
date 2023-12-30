@@ -25,37 +25,21 @@ public class ProductServiceImpl implements ProductService {
         this.fakeStoreProductApiInvoker = fakeStoreProductApiInvoker;
         this.logger = logger;
     }
-    
-    public GenericProductDto mapperFakeStoreProductDtoToGenericProductDto(FakeStoreProductDto fakeStoreProductDto){
-        if(fakeStoreProductDto != null) {
-            return GenericProductDto.builder()
-                    .id(fakeStoreProductDto.getId())
-                    .title(fakeStoreProductDto.getTitle())
-                    .image(fakeStoreProductDto.getImage())
-                    .price(fakeStoreProductDto.getPrice())
-                    .description(fakeStoreProductDto.getDescription())
-                    .category(fakeStoreProductDto.getCategory())
-                    .build();
-        }
-        return GenericProductDto.builder().build();
-    }
     @Override
     public GenericProductDto getProductById(Long productId) throws NotFoundException {
         FakeStoreProductDto fakeStoreProductDto =  fakeStoreProductApiInvoker.getProductById(productId);
-        return mapperFakeStoreProductDtoToGenericProductDto(fakeStoreProductDto);
+        return ObjectMapper.mapToGenericProductDto(fakeStoreProductDto);
     }
     @Override
     public List<GenericProductDto> getAllProducts(){
         List<FakeStoreProductDto> response = fakeStoreProductApiInvoker.getAllProducts();
-        return response.stream()
-                .map((this::mapperFakeStoreProductDtoToGenericProductDto))
-                .toList();
+        return response.stream().map(ObjectMapper::mapToGenericProductDto).toList();
     }
     @Override
     public List<GenericProductDto> getProducts(Integer limit){
         List<FakeStoreProductDto> fakeStoreProducts = fakeStoreProductApiInvoker.getProducts(limit);
         return fakeStoreProducts.stream()
-                .map(this::mapperFakeStoreProductDtoToGenericProductDto)
+                .map(ObjectMapper::mapToGenericProductDto)
                 .toList();
     }
     @Override
@@ -66,7 +50,7 @@ public class ProductServiceImpl implements ProductService {
     public List<GenericProductDto> getProductsInACategory(String category){
         List<FakeStoreProductDto> fakeStoreProducts = fakeStoreProductApiInvoker.getProductsInACategory(category);
         return fakeStoreProducts.stream()
-                .map(this::mapperFakeStoreProductDtoToGenericProductDto)
+                .map(ObjectMapper::mapToGenericProductDto)
                 .toList();
     }
     @Override

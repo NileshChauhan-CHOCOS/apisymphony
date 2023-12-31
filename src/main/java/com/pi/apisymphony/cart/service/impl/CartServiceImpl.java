@@ -64,5 +64,10 @@ public class CartServiceImpl implements CartService {
         FakeStoreCartDto fakeStoreResponse = fakeStoreCartApiInvoker.deleteCart(cartId);
         return ObjectMapper.mapToGenericCartDto(fakeStoreResponse);
     }
+    @Override
+    public List<GenericCartDto> getCartsInDateRange(String startDate, String endDate){
+        List<FakeStoreCartDto> fakeStoreCartResponse = fakeStoreCartApiInvoker.getCartsInDateRange(startDate,endDate);
+        return fakeStoreCartResponse.stream().map(ObjectMapper::mapToGenericCartDto).toList();
+    }
 }
 

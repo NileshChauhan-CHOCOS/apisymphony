@@ -5,8 +5,8 @@ import com.pi.apisymphony.dto.ExceptionDto;
 import com.pi.apisymphony.exception.InvalidArgumentException;
 import com.pi.apisymphony.exception.NoDataFoundException;
 import com.pi.apisymphony.exception.NotFoundException;
-import com.pi.apisymphony.response.BaseHttpResponse;
 import com.pi.apisymphony.response.BaseHttpResponseBuilder;
+import com.pi.apisymphony.response.ErrorHttpBaseResponse;
 import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import org.slf4j.Logger;
@@ -26,8 +26,13 @@ public class ControllerAdvice {
         return new ResponseEntity<>(new ExceptionDto(HttpStatus.NOT_FOUND, notFoundException.getMessage()), HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
-    public ResponseEntity<ExceptionDto> handleInternalServerErrorException(HttpServerErrorException.InternalServerError internalServerError){
-        return new ResponseEntity<>(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, ConstantsUtil.SOMETHING_WENT_WRONG),HttpStatus.INTERNAL_SERVER_ERROR);
+    public ResponseEntity<ErrorHttpBaseResponse> handleInternalServerErrorException(HttpServerErrorException.InternalServerError e){
+        String errorMessage = ExceptionUtils.getStackTrace(e);
+        errorMessage = String.format(ConstantsUtil.GENERIC_EXCEPTION_MESSAGE,errorMessage);
+        logger.error(errorMessage);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        ErrorHttpBaseResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exceptionDto);
+        return new ResponseEntity<>(baseHttpResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ExceptionDto> handleNullPointerException(NullPointerException nullPointerException){
@@ -36,10 +41,12 @@ public class ControllerAdvice {
         return new ResponseEntity<>(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR,ConstantsUtil.SOMETHING_WENT_WRONG),HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(InvalidArgumentException.class)
-    public ResponseEntity<ExceptionDto> handleInvalidArgumentException(@NonNull InvalidArgumentException invalidArgumentException){
-        String message = ExceptionUtils.getStackTrace(invalidArgumentException);
+    public ResponseEntity<ErrorHttpBaseResponse> handleInvalidArgumentException(@NonNull InvalidArgumentException e){
+        String message = ExceptionUtils.getStackTrace(e);
         logger.error(ConstantsUtil.INTERNAL_SERVER_ERROR_LOGGING,message);
-        return new ResponseEntity<>(new ExceptionDto(HttpStatus.BAD_REQUEST,invalidArgumentException.getMessage()),HttpStatus.OK);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.BAD_REQUEST, e.getMessage());
+        ErrorHttpBaseResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.BAD_REQUEST.value(),exceptionDto);
+        return new ResponseEntity<>(baseHttpResponse,HttpStatus.OK);
     }
     @ExceptionHandler(RuntimeException.class)
     public ResponseEntity<ExceptionDto> handleRuntimeException(RuntimeException e){
@@ -60,9 +67,21 @@ public class ControllerAdvice {
         return new ResponseEntity<>(new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, ConstantsUtil.SOMETHING_WENT_WRONG), HttpStatus.OK);
     }
     @ExceptionHandler(NoDataFoundException.class)
-    public ResponseEntity<BaseHttpResponse> handleNoDataFoundException(@NonNull NoDataFoundException e){
-        String message = e.getMessage();
-        BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.NOT_FOUND.value(), message);
+    public ResponseEntity<ErrorHttpBaseResponse> handleNoDataFoundException(@NonNull NoDataFoundException e){
+        String errorMessage = e.getMessage();
+        errorMessage = String.format(ConstantsUtil.GENERIC_EXCEPTION_MESSAGE,errorMessage);
+        logger.error(errorMessage);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR,HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        ErrorHttpBaseResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.NOT_FOUND.value(), exceptionDto);
         return new ResponseEntity<>(baseHttpResponse,HttpStatus.NOT_FOUND);
+    }
+    @ExceptionHandler(ClassCastException.class)
+    public ResponseEntity<ErrorHttpBaseResponse> handleClassCastException(@NonNull ClassCastException e){
+        String errorMessage = ExceptionUtils.getStackTrace(e);
+        errorMessage = String.format(ConstantsUtil.GENERIC_EXCEPTION_MESSAGE,errorMessage);
+        logger.error(errorMessage);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        ErrorHttpBaseResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exceptionDto);
+        return new ResponseEntity<>(baseHttpResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

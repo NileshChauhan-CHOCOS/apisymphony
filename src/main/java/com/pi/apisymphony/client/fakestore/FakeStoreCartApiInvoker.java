@@ -2,17 +2,19 @@ package com.pi.apisymphony.client.fakestore;
 
 import com.pi.apisymphony.client.ExternalCartApiInvoker;
 import com.pi.apisymphony.constans.ConstantsUtil;
-import com.pi.apisymphony.dto.FakeStoreCartDto;
+import com.pi.apisymphony.cart.dto.FakeStoreCartDto;
 import com.pi.apisymphony.exception.NoDataFoundException;
 import com.pi.apisymphony.exception.NotFoundException;
-import io.swagger.models.Response;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.client.RequestCallback;
+import org.springframework.web.client.ResponseExtractor;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.*;
@@ -85,5 +87,29 @@ public class FakeStoreCartApiInvoker implements ExternalCartApiInvoker<FakeStore
             throw new NoDataFoundException(String.format(ConstantsUtil.NO_DATA_FOUND,userId));
         }
         return Arrays.stream(fakeStoreCarts).toList();
+    }
+    @Override
+    public FakeStoreCartDto addCart(FakeStoreCartDto fakeStoreCartDto){
+        String uri = fakeStoreUri + fakeStoreCartApiEndPoint;
+        ResponseEntity<FakeStoreCartDto> response = restTemplate.postForEntity(uri, fakeStoreCartDto, FakeStoreCartDto.class);
+        return response.getBody();
+    }
+    @Override
+    public FakeStoreCartDto updateCart(Long cartId, FakeStoreCartDto fakeStoreCartDto){
+        String uri = fakeStoreUri + fakeStoreCartApiEndPoint + pathVariableId;
+        RequestCallback requestCallback = restTemplate.httpEntityCallback(fakeStoreCartDto,FakeStoreCartDto.class);
+        ResponseExtractor<ResponseEntity<FakeStoreCartDto>> responseExtractor = restTemplate.responseEntityExtractor(FakeStoreCartDto.class);
+        ResponseEntity<FakeStoreCartDto> response = restTemplate.execute(uri, HttpMethod.PUT, requestCallback ,responseExtractor,cartId);
+        Assert.notNull(response,"response should not be null");
+        return  response.getBody();
+    }
+    @Override
+    public FakeStoreCartDto deleteCart(Long id){
+        String uri = fakeStoreUri + fakeStoreCartApiEndPoint + "/{id}";
+        RequestCallback requestCallback = restTemplate.acceptHeaderRequestCallback(FakeStoreCartDto.class);
+        ResponseExtractor<ResponseEntity<FakeStoreCartDto>> responseExtractor = restTemplate.responseEntityExtractor(FakeStoreCartDto.class);
+        ResponseEntity<FakeStoreCartDto> response = restTemplate.execute(uri,HttpMethod.DELETE,requestCallback, responseExtractor,id);
+        Assert.notNull(response, "response should not be null");
+        return response.getBody();
     }
 }

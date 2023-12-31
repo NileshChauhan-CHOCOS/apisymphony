@@ -1,4 +1,4 @@
-package com.pi.apisymphony.dto;
+package com.pi.apisymphony.cart.dto;
 
 import lombok.Builder;
 import lombok.Data;

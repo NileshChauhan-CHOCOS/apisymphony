@@ -125,6 +125,7 @@ public class CartController {
             notes = "If you don't add any start date it will fetch from the beginning of time and if you don't add any end date it will fetch until now.")
     @ApiResponses(value = {
             @ApiResponse(code = 200,message = "Ok", response = GenericCartDto.class, responseContainer = "List"),
+            @ApiResponse(code = 400, message = "Bad request",response = ExceptionDto.class),
             @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
     })
     @GetMapping("/range/date")

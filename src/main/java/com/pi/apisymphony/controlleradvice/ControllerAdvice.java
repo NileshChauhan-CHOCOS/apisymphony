@@ -2,6 +2,7 @@ package com.pi.apisymphony.controlleradvice;
 
 import com.pi.apisymphony.constans.ConstantsUtil;
 import com.pi.apisymphony.dto.ExceptionDto;
+import com.pi.apisymphony.dto.HttpClientExceptionDto;
 import com.pi.apisymphony.exception.InvalidArgumentException;
 import com.pi.apisymphony.exception.NoDataFoundException;
 import com.pi.apisymphony.exception.NotFoundException;
@@ -13,12 +14,14 @@ import org.slf4j.Logger;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.client.RestClientException;
 
 @org.springframework.web.bind.annotation.ControllerAdvice
 @AllArgsConstructor
+@SuppressWarnings("unused")
 public class ControllerAdvice {
     private final Logger logger;
     @ExceptionHandler(NotFoundException.class)
@@ -83,5 +86,31 @@ public class ControllerAdvice {
         ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         ErrorHttpBaseResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exceptionDto);
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(HttpClientErrorException.class)
+    public ResponseEntity<ErrorHttpBaseResponse> handleHttpClientErrorException(@NonNull HttpClientErrorException e){
+        String errorMessage = ExceptionUtils.getMessage(e);
+        errorMessage = String.format(ConstantsUtil.GENERIC_EXCEPTION_MESSAGE,errorMessage);
+        logger.error(errorMessage);
+        HttpClientExceptionDto httpClientExceptionDto = e.getResponseBodyAs(HttpClientExceptionDto.class);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        if(httpClientExceptionDto != null){
+            exceptionDto.setMessage(httpClientExceptionDto.getMessage());
+        }
+        ErrorHttpBaseResponse errorHttpBaseResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exceptionDto);
+        return new ResponseEntity<>(errorHttpBaseResponse,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(HttpClientErrorException.BadRequest.class)
+    public ResponseEntity<ErrorHttpBaseResponse> handleBadRequestException(@NonNull HttpClientErrorException.BadRequest e){
+        String errorMessage = ExceptionUtils.getStackTrace(e);
+        errorMessage = String.format(ConstantsUtil.GENERIC_EXCEPTION_MESSAGE,errorMessage);
+        logger.error(errorMessage);
+        HttpClientExceptionDto httpClientExceptionDto = e.getResponseBodyAs(HttpClientExceptionDto.class);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.BAD_REQUEST,HttpStatus.BAD_REQUEST.getReasonPhrase());
+        if(httpClientExceptionDto != null){
+            exceptionDto.setMessage(httpClientExceptionDto.getMessage());
+        }
+        ErrorHttpBaseResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.BAD_REQUEST.value(), exceptionDto);
+        return new ResponseEntity<>(baseHttpResponse, HttpStatus.BAD_REQUEST);
     }
 }

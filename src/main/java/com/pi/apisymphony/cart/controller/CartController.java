@@ -2,7 +2,8 @@ package com.pi.apisymphony.cart.controller;
 
 import com.pi.apisymphony.cart.service.CartService;
 import com.pi.apisymphony.dto.ExceptionDto;
-import com.pi.apisymphony.dto.GenericCartDto;
+import com.pi.apisymphony.cart.dto.GenericCartDto;
+import com.pi.apisymphony.exception.InvalidArgumentException;
 import com.pi.apisymphony.exception.NoDataFoundException;
 import com.pi.apisymphony.exception.NotFoundException;
 import com.pi.apisymphony.response.BaseHttpResponse;
@@ -11,7 +12,9 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiResponse;
 import io.swagger.annotations.ApiResponses;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -78,6 +81,44 @@ public class CartController {
         List<GenericCartDto> userCarts = cartService.getUserCarts(userId);
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(userCarts);
         return new ResponseEntity<>(baseHttpResponse,HttpStatus.OK);
+    }
+    @ApiOperation(value = "This API endpoint adds a new cart in the system", notes = "remember that nothing in real will insert into the database. so if you want to access the new id you will get a 404 error")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,message = "Ok",response = GenericCartDto.class),
+            @ApiResponse(code = 404,message = "Bad request", response = ExceptionDto.class),
+            @ApiResponse(code = 500, message = "Internal server error", response = ExceptionDto.class)
+    })
+    @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<BaseHttpResponse> addCart(@RequestBody @NonNull GenericCartDto genericCartDto) throws InvalidArgumentException{
+        List<String> validated = genericCartDto.validate();
+        if(validated != null && !validated.isEmpty()){
+            throw new InvalidArgumentException(String.join(", ",validated));
+        }
+        GenericCartDto cartResponse = cartService.addCart(genericCartDto);
+        BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(cartResponse);
+        return new ResponseEntity<>(baseHttpResponse,HttpStatus.OK);
+    }
+    @ApiOperation(value = "This API endpoint updates a cart in the system", notes = "Nothing in real will update in the database")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,message = "Ok", response = GenericCartDto.class),
+            @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
+    })
+    @PutMapping("/update/{cartId}")
+    public ResponseEntity<BaseHttpResponse> updateCart(@PathVariable Long cartId,@RequestBody GenericCartDto genericCartDto){
+        GenericCartDto cartResponse = cartService.updateCart(cartId,genericCartDto);
+        BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(cartResponse);
+        return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
+    }
+    @ApiOperation(value = "This API endpoint deletes a cart in the system",notes = "The cart will not be deleted on the database")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,message = "Ok", response = GenericCartDto.class),
+            @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
+    })
+    @DeleteMapping("/delete/{cartId}")
+    public ResponseEntity<BaseHttpResponse> deleteCart(@PathVariable long cartId){
+        GenericCartDto genericCartDto = cartService.deleteCart(cartId);
+        BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(genericCartDto);
+        return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
     }
 }
 

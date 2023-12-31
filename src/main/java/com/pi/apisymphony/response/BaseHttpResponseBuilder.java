@@ -1,5 +1,6 @@
 package com.pi.apisymphony.response;
 
+import com.pi.apisymphony.dto.ExceptionDto;
 import lombok.NonNull;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -13,7 +14,7 @@ public class BaseHttpResponseBuilder {
         return new BaseHttpResponse(HttpStatus.OK.value(), "Ok",result, LocalDateTime.now());
     }
     @Contract("_, _ -> new")
-    public static @NotNull BaseHttpResponse errorResponse(Integer statusCode, String message){
-        return new BaseHttpResponse(statusCode,message,null, LocalDateTime.now());
+    public static @NotNull ErrorHttpBaseResponse errorResponse(Integer statusCode, ExceptionDto exceptionDto){
+        return new ErrorHttpBaseResponse(statusCode,exceptionDto,LocalDateTime.now());
     }
 }

@@ -8,14 +8,17 @@ import com.pi.apisymphony.exception.InvalidArgumentException;
 import com.pi.apisymphony.exception.NotFoundException;
 import com.pi.apisymphony.product.service.ProductService;
 import com.pi.apisymphony.util.ObjectMapper;
+import lombok.Getter;
+import lombok.Setter;
 import org.slf4j.Logger;
-import org.springframework.stereotype.Component;
-
+import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Random;
 
 
-@Component
+@Service
+@Getter
+@Setter
 public class ProductServiceImpl implements ProductService {
     private final FakeStoreProductApiInvoker fakeStoreProductApiInvoker;
     private final Random random = new Random();

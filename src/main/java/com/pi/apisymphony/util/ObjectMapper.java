@@ -1,8 +1,8 @@
 package com.pi.apisymphony.util;
 
-import com.pi.apisymphony.dto.FakeStoreCartDto;
+import com.pi.apisymphony.cart.dto.FakeStoreCartDto;
 import com.pi.apisymphony.dto.FakeStoreProductDto;
-import com.pi.apisymphony.dto.GenericCartDto;
+import com.pi.apisymphony.cart.dto.GenericCartDto;
 import com.pi.apisymphony.dto.GenericProductDto;
 
 import java.util.Arrays;
@@ -39,7 +39,22 @@ public class ObjectMapper {
                     .id(fakeStoreCartDto.getId())
                     .userId(fakeStoreCartDto.getUserId())
                     .date(fakeStoreCartDto.getDate())
-                    .products(Arrays.stream(fakeStoreCartDto.getProducts()).map(ObjectMapper::mapToGenericCartItem).toArray(GenericCartDto.CartItem[]::new))
+                    .products(Arrays.stream(fakeStoreCartDto.getProducts()).
+                            map(ObjectMapper::mapToGenericCartItem).
+                            toArray(GenericCartDto.CartItem[]::new))
+                    .build();
+        }
+        return null;
+    }
+    public static FakeStoreCartDto mapToFakeStoreCartDto(GenericCartDto genericCartDto){
+        if(genericCartDto != null){
+            return FakeStoreCartDto.builder()
+                    .id(genericCartDto.getId())
+                    .userId(genericCartDto.getUserId())
+                    .date(genericCartDto.getDate())
+                    .products(Arrays.stream(genericCartDto.getProducts())
+                            .map(ObjectMapper::mapToFakeStoreCartItem).
+                            toArray(FakeStoreCartDto.CartItem[]::new))
                     .build();
         }
         return null;
@@ -49,6 +64,15 @@ public class ObjectMapper {
             return GenericCartDto.CartItem.builder()
                     .productId(fakeStoreCartItem.getProductId())
                     .quantity(fakeStoreCartItem.getQuantity())
+                    .build();
+        }
+        return null;
+    }
+    public static FakeStoreCartDto.CartItem mapToFakeStoreCartItem(GenericCartDto.CartItem genericCartItem){
+        if(genericCartItem != null){
+            return FakeStoreCartDto.CartItem.builder()
+                    .productId(genericCartItem.getProductId())
+                    .quantity(genericCartItem.getQuantity())
                     .build();
         }
         return null;

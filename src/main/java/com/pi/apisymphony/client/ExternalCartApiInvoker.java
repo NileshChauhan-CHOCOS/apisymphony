@@ -12,4 +12,7 @@ public interface ExternalCartApiInvoker<T> {
     List<T> getCarts(int limit);
     List<T> getSortedCarts(String sort);
     List<T> getUserCarts(Long userId) throws NoDataFoundException;
+    T addCart(T object);
+    T updateCart(Long cartId, T object);
+    T deleteCart(Long cartId);
 }

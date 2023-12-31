@@ -16,5 +16,5 @@ public interface CartService {
     GenericCartDto addCart(GenericCartDto object);
     GenericCartDto updateCart(Long cartId, GenericCartDto object);
     GenericCartDto deleteCart(Long cartId);
-    
+    List<GenericCartDto> getCartsInDateRange(String startDate, String endDate);
 }

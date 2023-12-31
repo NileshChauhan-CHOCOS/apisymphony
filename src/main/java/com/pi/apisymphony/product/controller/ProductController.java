@@ -19,6 +19,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/products")
 @AllArgsConstructor
+@SuppressWarnings("unused")
 public class ProductController {
     private final ProductService productService;
     private final Logger logger;

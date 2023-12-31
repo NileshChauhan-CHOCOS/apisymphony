@@ -23,6 +23,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/carts")
 @AllArgsConstructor
+@SuppressWarnings("unused")
 public class CartController {
     private final CartService cartService;
     @ApiOperation(value = "This API endpoint retrieves all the cart", httpMethod = "GET")
@@ -118,6 +119,18 @@ public class CartController {
     public ResponseEntity<BaseHttpResponse> deleteCart(@PathVariable long cartId){
         GenericCartDto genericCartDto = cartService.deleteCart(cartId);
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(genericCartDto);
+        return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
+    }
+    @ApiOperation(value = "This API endpoint retrieves all the carts between the dates",
+            notes = "If you don't add any start date it will fetch from the beginning of time and if you don't add any end date it will fetch until now.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200,message = "Ok", response = GenericCartDto.class, responseContainer = "List"),
+            @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
+    })
+    @GetMapping("/range/date")
+    public ResponseEntity<BaseHttpResponse> getCartsInDateRange(@RequestParam String startDate, @RequestParam String endDate){
+        List<GenericCartDto> genericCarts = cartService.getCartsInDateRange(startDate,endDate);
+        BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(genericCarts);
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
     }
 }

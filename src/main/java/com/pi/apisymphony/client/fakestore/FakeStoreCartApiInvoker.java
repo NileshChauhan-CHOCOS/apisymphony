@@ -112,4 +112,14 @@ public class FakeStoreCartApiInvoker implements ExternalCartApiInvoker<FakeStore
         Assert.notNull(response, "response should not be null");
         return response.getBody();
     }
+    @Override
+    public List<FakeStoreCartDto> getCartsInDateRange(String startDate, String endDate){
+        String specificUri = fakeStoreUri + fakeStoreCartApiEndPoint + "?startdate={startDate}&enddate={endDate}";
+        Map<String, String> requestParam = new HashMap<>();
+        requestParam.put("startDate", startDate);
+        requestParam.put("endDate", endDate);
+        ResponseEntity<FakeStoreCartDto[]> response = restTemplate.getForEntity(specificUri,FakeStoreCartDto[].class, requestParam);
+        Assert.notNull(response.getBody(), "response should not be null");
+        return Arrays.stream(response.getBody()).toList();
+    }
 }

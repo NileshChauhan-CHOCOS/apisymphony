@@ -15,4 +15,5 @@ public interface ExternalCartApiInvoker<T> {
     T addCart(T object);
     T updateCart(Long cartId, T object);
     T deleteCart(Long cartId);
+    List<T> getCartsInDateRange(String startDate, String endDate);
 }

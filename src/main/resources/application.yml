@@ -6,6 +6,7 @@ fakestore:
     paths:
       product: /products
       cart: /carts
+      users: /users
       pathVariable:
         id: /{id}
         category: /category/{category}

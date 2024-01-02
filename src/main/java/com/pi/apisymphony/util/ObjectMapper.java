@@ -4,6 +4,8 @@ import com.pi.apisymphony.cart.dto.FakeStoreCartDto;
 import com.pi.apisymphony.dto.FakeStoreProductDto;
 import com.pi.apisymphony.cart.dto.GenericCartDto;
 import com.pi.apisymphony.dto.GenericProductDto;
+import com.pi.apisymphony.user.dto.FakestoreUserDto;
+import com.pi.apisymphony.user.dto.GenericUserDto;
 
 import java.util.Arrays;
 
@@ -76,5 +78,33 @@ public class ObjectMapper {
                     .build();
         }
         return null;
+    }
+    public static GenericUserDto mapToGenericUserDto(FakestoreUserDto fakestoreUserDto){
+        if(fakestoreUserDto != null){
+            return GenericUserDto.builder()
+                    .id(fakestoreUserDto.getId())
+                    .email(fakestoreUserDto.getEmail())
+                    .username(fakestoreUserDto.getUsername())
+                    .password(fakestoreUserDto.getPassword())
+                    .name(fakestoreUserDto.getName())
+                    .address(fakestoreUserDto.getAddress())
+                    .phone(fakestoreUserDto.getPhone())
+                    .build();
+        }
+        return GenericUserDto.builder().build();
+    }
+    public static FakestoreUserDto mapToFakeStoreUserDto(GenericUserDto user) {
+        if(user != null){
+            return FakestoreUserDto.builder()
+                    .id(user.getId())
+                    .email(user.getEmail())
+                    .username(user.getUsername())
+                    .password(user.getPassword())
+                    .name(user.getName())
+                    .address(user.getAddress())
+                    .phone(user.getPhone())
+                    .build();
+        }
+        return FakestoreUserDto.builder().build();
     }
 }

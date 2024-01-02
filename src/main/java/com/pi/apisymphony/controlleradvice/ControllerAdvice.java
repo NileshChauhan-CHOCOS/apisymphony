@@ -18,6 +18,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.HttpServerErrorException;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.springframework.web.client.RestClientException;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @org.springframework.web.bind.annotation.ControllerAdvice
 @AllArgsConstructor
@@ -25,8 +26,13 @@ import org.springframework.web.client.RestClientException;
 public class ControllerAdvice {
     private final Logger logger;
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<ExceptionDto> handleNotFoundException(@NonNull NotFoundException notFoundException){
-        return new ResponseEntity<>(new ExceptionDto(HttpStatus.NOT_FOUND, notFoundException.getMessage()), HttpStatus.NOT_FOUND);
+    public ResponseEntity<ErrorHttpBaseResponse> handleNotFoundException(@NonNull NotFoundException e){
+        String errorMessage = ExceptionUtils.getStackTrace(e);
+        errorMessage = String.format(ConstantsUtil.GENERIC_EXCEPTION_MESSAGE, errorMessage);
+        logger.error(errorMessage);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.NOT_FOUND, e.getMessage());
+        ErrorHttpBaseResponse errorHttpBaseResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.NOT_FOUND.value(),exceptionDto);
+        return new ResponseEntity<>(errorHttpBaseResponse, HttpStatus.NOT_FOUND);
     }
     @ExceptionHandler(HttpServerErrorException.InternalServerError.class)
     public ResponseEntity<ErrorHttpBaseResponse> handleInternalServerErrorException(HttpServerErrorException.InternalServerError e){
@@ -36,6 +42,15 @@ public class ControllerAdvice {
         ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
         ErrorHttpBaseResponse baseHttpResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exceptionDto);
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ErrorHttpBaseResponse> handleNoResourceFoundException(NoResourceFoundException e){
+        String errorMessage = ExceptionUtils.getStackTrace(e);
+        errorMessage = String.format(ConstantsUtil.GENERIC_EXCEPTION_MESSAGE, errorMessage);
+        logger.error(errorMessage);
+        ExceptionDto exceptionDto = new ExceptionDto(HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase());
+        ErrorHttpBaseResponse baseErrorResponse = BaseHttpResponseBuilder.errorResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), exceptionDto);
+        return new ResponseEntity<>(baseErrorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
     }
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ExceptionDto> handleNullPointerException(NullPointerException nullPointerException){

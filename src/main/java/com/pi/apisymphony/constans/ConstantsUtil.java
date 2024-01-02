@@ -10,4 +10,9 @@ public class ConstantsUtil {
     public static final String NO_DATA_FOUND = "No data found for userid = %s";
     public static final String GENERIC_EXCEPTION_MESSAGE = "Exception occurred while serving request : --> %s";
     public static final String RESPONSE_ASSERT = "response should not be null";
+    public static final String USER_NOT_FOUND = "User with id: %d not found";
+    public static final String ARGUMENT_OBJECT_ASSERT = "Object cannot be null in the method argument";
+    public static final String EMAIL_VALIDATION_ASSERT = "Email is not valid";
+    public static final String PHONE_VALIDATION_ASSERT = "Invalid phone number";
+    public static final String CONTAINER_LIST = "List";
 }

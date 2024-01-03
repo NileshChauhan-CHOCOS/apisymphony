@@ -224,4 +224,4 @@ To run this project locally, you'll need the following:
 6. After tomcat started successfully. go to postman and hit above apis.
 
 ## Usage
- ### This project demonstrates how to call or consume an external API in Spring Boo.
+ ### This project demonstrates how to call or consume an external API in Spring Boot.

@@ -1,6 +1,8 @@
 package com.pi.apisymphony.cart.controller;
 
 import com.pi.apisymphony.cart.service.CartService;
+import com.pi.apisymphony.constans.ConstantsUtil;
+import com.pi.apisymphony.constans.HttpConstant;
 import com.pi.apisymphony.dto.ExceptionDto;
 import com.pi.apisymphony.cart.dto.GenericCartDto;
 import com.pi.apisymphony.exception.InvalidArgumentException;
@@ -26,10 +28,10 @@ import java.util.List;
 @SuppressWarnings("unused")
 public class CartController {
     private final CartService cartService;
-    @ApiOperation(value = "This API endpoint retrieves all the cart", httpMethod = "GET")
+    @ApiOperation(value = "This API endpoint retrieves all the cart", httpMethod = HttpConstant.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200,message = "success",responseContainer = "List", response = GenericCartDto.class),
-            @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 200,message = HttpConstant.OK,responseContainer = ConstantsUtil.CONTAINER_LIST, response = GenericCartDto.class),
+            @ApiResponse(code = 500,message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @GetMapping("/all")
     public ResponseEntity<BaseHttpResponse> allCarts(){
@@ -37,11 +39,11 @@ public class CartController {
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(carts);
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
     }
-    @ApiOperation(value = "This API endpoint retrieves a cart based on id", httpMethod = "GET")
+    @ApiOperation(value = "This API endpoint retrieves a cart based on id", httpMethod = HttpConstant.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200,message = "Ok",response = GenericCartDto.class),
-            @ApiResponse(code = 404,message = "Not found", response = ExceptionDto.class),
-            @ApiResponse(code = 500, message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 200,message = HttpConstant.OK,response = GenericCartDto.class),
+            @ApiResponse(code = 404,message = HttpConstant.NOT_FOUND, response = ExceptionDto.class),
+            @ApiResponse(code = 500, message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @GetMapping("/{id}")
     public ResponseEntity<BaseHttpResponse> getCartById(@PathVariable Long id) throws NotFoundException {
@@ -49,10 +51,10 @@ public class CartController {
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(genericCartDto);
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
     }
-    @ApiOperation(value = "This API endpoint retrieves limited carts", notes = "If limit is less then or equal to zero then limit will be default = 5", httpMethod = "GET")
+    @ApiOperation(value = "This API endpoint retrieves limited carts", notes = "If limit is less then or equal to zero then limit will be default = 5", httpMethod = HttpConstant.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Ok", response = GenericCartDto.class, responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Internal server error",response = ExceptionDto.class)
+            @ApiResponse(code = 200, message = HttpConstant.OK, response = GenericCartDto.class, responseContainer = ConstantsUtil.CONTAINER_LIST),
+            @ApiResponse(code = 500, message = HttpConstant.SERVER_ERROR,response = ExceptionDto.class)
     })
     @GetMapping("/limit")
     public ResponseEntity<BaseHttpResponse> getCarts(@RequestParam int limit){
@@ -60,10 +62,10 @@ public class CartController {
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(limitedCarts);
         return new ResponseEntity<>(baseHttpResponse,HttpStatus.OK);
     }
-    @ApiOperation(value = "This API endpoint retrieves carts in the sorted order",notes = "asc/desc, default mode and not equal to asc/desc order is ascending",httpMethod = "GET")
+    @ApiOperation(value = "This API endpoint retrieves carts in the sorted order",notes = "asc/desc, default mode and not equal to asc/desc order is ascending",httpMethod = HttpConstant.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Ok", response = GenericCartDto.class, responseContainer = "List"),
-            @ApiResponse(code = 500, message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 200, message = HttpConstant.OK, response = GenericCartDto.class, responseContainer = ConstantsUtil.CONTAINER_LIST),
+            @ApiResponse(code = 500, message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @GetMapping("/sort")
     public ResponseEntity<BaseHttpResponse> getSortedCarts(@RequestParam String sort){
@@ -71,11 +73,11 @@ public class CartController {
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(sortedCarts);
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
     }
-    @ApiOperation(value = "This API endpoint retrieves all the carts of a user",httpMethod = "GET")
+    @ApiOperation(value = "This API endpoint retrieves all the carts of a user",httpMethod = HttpConstant.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = "Ok",response = GenericCartDto.class, responseContainer = "List"),
-            @ApiResponse(code = 404, message = "No Data found", response = ExceptionDto.class),
-            @ApiResponse(code = 500, message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 200, message = HttpConstant.OK,response = GenericCartDto.class, responseContainer = ConstantsUtil.CONTAINER_LIST),
+            @ApiResponse(code = 404, message = HttpConstant.NOT_FOUND, response = ExceptionDto.class),
+            @ApiResponse(code = 500, message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @GetMapping("/user/{userId}")
     public ResponseEntity<BaseHttpResponse> getUserCarts(@PathVariable Long userId) throws NoDataFoundException {
@@ -83,11 +85,13 @@ public class CartController {
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(userCarts);
         return new ResponseEntity<>(baseHttpResponse,HttpStatus.OK);
     }
-    @ApiOperation(value = "This API endpoint adds a new cart in the system", notes = "remember that nothing in real will insert into the database. so if you want to access the new id you will get a 404 error")
+    @ApiOperation(value = "This API endpoint adds a new cart in the system",
+            notes = "remember that nothing in real will insert into the database. so if you want to access the new id you will get a 404 error",
+            httpMethod = HttpConstant.POST)
     @ApiResponses(value = {
-            @ApiResponse(code = 200,message = "Ok",response = GenericCartDto.class),
-            @ApiResponse(code = 404,message = "Bad request", response = ExceptionDto.class),
-            @ApiResponse(code = 500, message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 201,message = HttpConstant.CREATED,response = GenericCartDto.class),
+            @ApiResponse(code = 400,message = HttpConstant.BAD_REQUEST, response = ExceptionDto.class),
+            @ApiResponse(code = 500, message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<BaseHttpResponse> addCart(@RequestBody @NonNull GenericCartDto genericCartDto) throws InvalidArgumentException{
@@ -99,10 +103,10 @@ public class CartController {
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(cartResponse);
         return new ResponseEntity<>(baseHttpResponse,HttpStatus.OK);
     }
-    @ApiOperation(value = "This API endpoint updates a cart in the system", notes = "Nothing in real will update in the database")
+    @ApiOperation(value = "This API endpoint updates a cart in the system", notes = "Nothing in real will update in the database", httpMethod = HttpConstant.PUT)
     @ApiResponses(value = {
-            @ApiResponse(code = 200,message = "Ok", response = GenericCartDto.class),
-            @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 200,message = HttpConstant.OK, response = GenericCartDto.class),
+            @ApiResponse(code = 500,message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @PutMapping("/update/{cartId}")
     public ResponseEntity<BaseHttpResponse> updateCart(@PathVariable Long cartId,@RequestBody GenericCartDto genericCartDto){
@@ -110,10 +114,10 @@ public class CartController {
         BaseHttpResponse baseHttpResponse = BaseHttpResponseBuilder.successResponse(cartResponse);
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
     }
-    @ApiOperation(value = "This API endpoint deletes a cart in the system",notes = "The cart will not be deleted on the database")
+    @ApiOperation(value = "This API endpoint deletes a cart in the system",notes = "The cart will not be deleted on the database", httpMethod = HttpConstant.DELETE)
     @ApiResponses(value = {
-            @ApiResponse(code = 200,message = "Ok", response = GenericCartDto.class),
-            @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 200,message = HttpConstant.OK, response = GenericCartDto.class),
+            @ApiResponse(code = 500,message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @DeleteMapping("/delete/{cartId}")
     public ResponseEntity<BaseHttpResponse> deleteCart(@PathVariable long cartId){
@@ -122,11 +126,12 @@ public class CartController {
         return new ResponseEntity<>(baseHttpResponse, HttpStatus.OK);
     }
     @ApiOperation(value = "This API endpoint retrieves all the carts between the dates",
-            notes = "If you don't add any start date it will fetch from the beginning of time and if you don't add any end date it will fetch until now.")
+            notes = "If you don't add any start date it will fetch from the beginning of time and if you don't add any end date it will fetch until now.",
+            httpMethod = HttpConstant.GET)
     @ApiResponses(value = {
-            @ApiResponse(code = 200,message = "Ok", response = GenericCartDto.class, responseContainer = "List"),
-            @ApiResponse(code = 400, message = "Bad request",response = ExceptionDto.class),
-            @ApiResponse(code = 500,message = "Internal server error", response = ExceptionDto.class)
+            @ApiResponse(code = 200,message = HttpConstant.OK, response = GenericCartDto.class, responseContainer = ConstantsUtil.CONTAINER_LIST),
+            @ApiResponse(code = 400, message = HttpConstant.BAD_REQUEST,response = ExceptionDto.class),
+            @ApiResponse(code = 500,message = HttpConstant.SERVER_ERROR, response = ExceptionDto.class)
     })
     @GetMapping("/range/date")
     public ResponseEntity<BaseHttpResponse> getCartsInDateRange(@RequestParam String startDate, @RequestParam String endDate){

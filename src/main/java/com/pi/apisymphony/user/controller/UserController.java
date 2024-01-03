@@ -77,7 +77,7 @@ public class UserController {
     @PostMapping(value = "/add", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ApiOperation(value = "This API endpoint add a user in the system",httpMethod = HttpConstant.POST)
     @ApiResponses(value = {
-            @ApiResponse(code = 200, message = HttpConstant.OK, response = GenericUserDto.class),
+            @ApiResponse(code = 201, message = HttpConstant.CREATED, response = GenericUserDto.class),
             @ApiResponse(code = 400, message = HttpConstant.BAD_REQUEST,response = ExceptionDto.class),
             @ApiResponse(code = 500, message = HttpConstant.SERVER_ERROR,response = ExceptionDto.class)
     })
